@@ -1,24 +1,21 @@
 import React from "react";
 import { connect } from "react-redux";
-import {
-  Label,
-  Span,
-  SpanSwatch
-} from "../../components/ProductAttributes/styles";
+import { Label, Span } from "../../components/ProductAttributes/styles";
+import Slider from "../../components/Slider";
 import {
   decrement,
   increment,
   removeFromCart
 } from "../../features/cart/cartSlice";
 import {
+  AttributeOptions,
   AttributesCart,
   ButtonQuantity,
-  Container,
-  Image,
-  ItemAttributes,
+  Container, ItemAttributes,
   ItemQuantity,
   List,
   ListItem,
+  Options,
   Price,
   ProductBrand,
   ProductTitle,
@@ -50,47 +47,38 @@ class Cart extends React.Component {
                     <ProductTitle>{item.product.name}</ProductTitle>
                   </div>
                   <Price>
-                    {item.product.prices ? (
+                    {item.product.prices &&
                       item.product.prices.map(
                         (price) =>
                           price.currency.label === currency.currency &&
-                          `${price.currency.symbol} ${
-                            Math.round(price.amount * item.quantity * 100) / 100
-                          }`
-                      )
-                    ) : (
-                      <span>Loading</span>
-                    )}
+                          `${price.currency.symbol} ${price.amount}`
+                      )}
                   </Price>
                   <AttributesCart>
-                    {item.product.attributes ? (
-                      item.product.attributes.map((attribute) => (
-                        <p key={attribute.id}>
-                          {attribute.items ? (
-                            attribute.items.map((attrItem) => (
-                              <span key={attrItem.id}>
-                                {item.selectedAttributes[attribute.name] ===
-                                  attrItem.value && (
-                                  <Label>
-                                    {attrItem.type === "swatch" ? (
-                                      <SpanSwatch color={attrItem.value}>
-                                        {attrItem.displayValue}
-                                      </SpanSwatch>
-                                    ) : (
-                                      <Span>{attrItem.displayValue}</Span>
-                                    )}
-                                  </Label>
-                                )}
-                              </span>
-                            ))
-                          ) : (
-                            <span>deu ruim</span>
-                          )}
-                        </p>
-                      ))
-                    ) : (
-                      <span></span>
-                    )}
+                    {item.product.attributes.map((attribute) => (
+                      <AttributeOptions key={attribute.id}>
+                        <span>{attribute.name}:</span>
+                        <Options>
+                          {attribute.items &&
+                            attribute.items.map((attributeItem) => (
+                              <Label key={attributeItem.id}>
+                                <Span
+                                  selected={
+                                    item.selectedAttributes.find(
+                                      (attr) => attr.id === attribute.id
+                                    ) &&
+                                    item.selectedAttributes.find(
+                                      (attr) => attr.id === attribute.id
+                                    ).value === attributeItem.value
+                                  }
+                                >
+                                  {attributeItem.displayValue}
+                                </Span>
+                              </Label>
+                            ))}
+                        </Options>
+                      </AttributeOptions>
+                    ))}
                   </AttributesCart>
                 </ItemAttributes>
                 <ItemQuantity>
@@ -111,13 +99,14 @@ class Cart extends React.Component {
                       -
                     </ButtonQuantity>
                   </Quantity>
-                  <Image>
+                  <Slider images={item.product.gallery} />
+                  {/* <Image>
                     <img
                       src={item.product.gallery[0]}
                       alt="product"
                       width="100%"
                     />
-                  </Image>
+                  </Image> */}
                 </ItemQuantity>
               </ListItem>
             ))

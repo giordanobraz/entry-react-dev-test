@@ -83,7 +83,20 @@ export const Image = styled.div`
 
 export const AttributesCart = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: center;
   gap: 0.5rem;
   margin: 1rem 0;
+`;
+
+export const AttributeOptions = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+export const Options = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
 `;

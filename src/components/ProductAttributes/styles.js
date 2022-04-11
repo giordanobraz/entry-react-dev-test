@@ -32,13 +32,21 @@ export const SpanSwatch = styled.span`
 `;
 
 export const Span = styled.span`
-  display: inline-block;  
+  display: inline-block;
   height: 45px;
   cursor: pointer;
   border: 1px solid var(--c-black);
   text-align: center;
   line-height: 44px;
   padding: 0 1rem;
+  ${({ selected }) => {
+    if (selected) {
+      return `
+        background-color: var(--c-black);
+        color: white;       
+      `;
+    }
+  }}
 `;
 
 export const Label = styled.label`
@@ -128,12 +136,15 @@ export const Description = styled.div`
 `;
 
 export const ShowMoreBtn = styled.button`
+  margin-top: 1rem;
   cursor: pointer;
   font-size: 1rem;
   background-color: transparent;
-  border: none;
+  border: 1px solid var(--c-black);
+  padding: 0.5rem 1rem;
 
   &:hover {
     color: var(--c-primary);
+    border: 1px solid var(--c-primary);
   }
 `;

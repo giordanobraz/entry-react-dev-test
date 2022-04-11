@@ -17,7 +17,7 @@ export const CartModal = styled.div`
   width: 500px;
   right: 340px;
   max-width: 90%;
-  max-width: 325px;
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -47,6 +47,7 @@ export const Details = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  text-align: left;
 `;
 
 export const Total = styled.div`
@@ -62,11 +63,15 @@ export const Buttons = styled.div`
   gap: 1rem;
 `;
 
-export const Button = styled.button`
+export const Button = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 0.5rem 1rem;
   cursor: pointer;
   width: 100%;
   height: 2.6rem;
+  font-size: 1rem;
   font-family: "Raleway", sans-serif;
   font-weight: 600;
   text-transform: uppercase;
@@ -85,7 +90,7 @@ export const Button = styled.button`
 `;
 
 export const Text = styled.p`
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: ${({ bold }) => (bold ? 700 : 500)};
   font-family: "Raleway", sans-serif;
 `;
@@ -107,7 +112,11 @@ export const Quantity = styled.div`
   align-items: center;
 `;
 
-export const ButtonQuantity = styled.button`
+export const ButtonQuantity = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
   width: 24px;
   height: 24px;
   background: transparent;
@@ -124,18 +133,46 @@ export const Image = styled.div`
 
 export const Attributes = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 0.5rem;
   margin: 1rem 0;
 `;
 
-export const Span = styled.span`  
-  height: 24px;
-  width: 24px;
+export const AttributeMapping = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 5px 0px;
+`;
+
+export const Options = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.3rem;
+`;
+
+export const Span = styled.span`
+  height: 20px;
+  width: 20px;
   cursor: pointer;
-  border: 1px solid var(--c-black);
-  text-align: center;  
-  padding: 0.5rem;
+  color: var(--c-grey);
+  border: 1px solid var(--c-grey);
+  background-color: #e2e2e2;
+  text-align: center;
+  padding: 0.3rem;
+  ${({ selected }) => {
+    if (selected) {
+      return `
+        background-color: var(--c-black);
+        color: white;       
+      `;
+    }
+  }}
+`;
+
+export const AttributeName = styled.p`
+  font-size: 0.8rem;
+  font-family: "Raleway", sans-serif;
 `;
 
 export const Label = styled.label`

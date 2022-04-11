@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import {
   decrement,
@@ -8,6 +7,8 @@ import {
 } from "../../features/cart/cartSlice";
 import { withParams } from "../../utils";
 import {
+  AttributeMapping,
+  AttributeName,
   Attributes,
   Button,
   ButtonQuantity,
@@ -21,32 +22,37 @@ import {
   Item,
   ItemQuantity,
   Label,
+  Options,
   Quantity,
   Span,
   Text,
   Total
 } from "./styles";
 
-const modal = document.querySelector("#modal-root");
-
 class Modal extends React.Component {
   constructor(props) {
     super(props);
+    this.container = React.createRef();
     this.state = {
       prices: [],
     };
   }
 
   componentDidMount() {
-    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("click", this.handleClickOutside);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("click", this.handleClickOutside);
   }
 
-  handleKeyDown = (event) => {
-    if (event.key === "Escape") {
+  handleClickOutside = (event) => {
+    if (
+      event.target === this.container.current ||
+      event.target.id === "view-bag" ||
+      event.target.id === "nav" ||
+      event.target.id === "root"
+    ) {
       this.props.handleCloseModal();
     }
   };
@@ -57,6 +63,10 @@ class Modal extends React.Component {
     } else {
       this.props.removeItem(id);
     }
+  };
+
+  handleViewBagButton = () => {
+    this.props.navigate("/cart");
   };
 
   getTotalValue = () => {
@@ -73,12 +83,16 @@ class Modal extends React.Component {
   };
 
   render() {
-    return ReactDOM.createPortal(
+    return (
       <Container ref={this.container}>
         <CartModal>
           <Header>
-            <Text bold>My Bag</Text>, {this.props.cart.length}{" "}
-            {this.props.cart.length === 1 ? "item" : "items"}
+            <Text bold>My Bag, </Text>
+            <Text>
+              {" "}
+              {this.props.cart.length}
+              {this.props.cart.length === 1 ? " item" : " items"}
+            </Text>
           </Header>
           <Content>
             {this.props.cart.map((item, index) => (
@@ -90,25 +104,35 @@ class Modal extends React.Component {
                     {item.product.prices.map(
                       (price) =>
                         price.currency.label === this.props.currency.currency &&
-                        `${price.currency.symbol} ${
-                          Math.round(price.amount * item.quantity * 100) / 100
-                        }`
+                        `${price.currency.symbol} ${price.amount}`
                     )}
                   </Text>
-                  <Attributes>
-                    {item.product.attributes.map((attribute) => (
-                      <div key={attribute.id}>
-                        {attribute.items.map(
-                          (attrItem, index) =>
-                            item.selectedAttributes[attribute.name] ===
-                              attrItem.value && (
-                              <Label key={index}>
-                                <Span>{attrItem.displayValue}</Span>
-                              </Label>
-                            )
-                        )}
-                      </div>
-                    ))}
+                  <Attributes>                    
+                      {item.product.attributes.map((attribute) => (
+                        <AttributeMapping key={attribute.id}>
+                          <AttributeName>{attribute.name}:</AttributeName>
+                          <Options>
+                            {attribute.items &&
+                              attribute.items.map((attributeItem) => (
+                                <Label key={attributeItem.id}>
+                                  <Span
+                                    selected={
+                                      item.selectedAttributes.find(
+                                        (attr) => attr.id === attribute.id
+                                      ) &&
+                                      item.selectedAttributes.find(
+                                        (attr) => attr.id === attribute.id
+                                      ).value === attributeItem.value
+                                    }
+                                  >
+                                    {attributeItem.displayValue}
+                                  </Span>
+                                </Label>
+                              ))}
+                          </Options>
+                        </AttributeMapping>
+                      ))}
+                   
                   </Attributes>
                 </Details>
                 <ItemQuantity>
@@ -147,14 +171,13 @@ class Modal extends React.Component {
             </Text>
           </Total>
           <Buttons>
-            <Button onClick={() => this.props.navigate("/cart")}>
+            <Button id={"view-bag"} onClick={this.handleViewBagButton}>
               View Bag
             </Button>
             <Button checkout>Check Out</Button>
           </Buttons>
         </CartModal>
-      </Container>,
-      modal
+      </Container>
     );
   }
 }

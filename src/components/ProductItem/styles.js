@@ -5,23 +5,29 @@ export const Button = styled.button`
   position: absolute;
   background-color: transparent;
   border: none;
-  cursor: pointer; 
-  top: 278px;  
+  cursor: pointer;
+  top: 278px;
   right: 20px;
+  z-index: 9999;
   &:hover {
     transform: scale(1.1);
   }
 `;
 
-export const ProductCard = styled.div`
+export const Product = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+`;
+
+export const Card = styled.div`
   display: flex;
   position: relative;
   flex-direction: column;
-  gap: 24px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  padding: 16px;
   &:hover {
     box-shadow: 0px 4px 35px rgba(168, 172, 176, 0.19);
     ${Button} {

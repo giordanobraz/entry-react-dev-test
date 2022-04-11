@@ -1,7 +1,7 @@
 import React from "react";
 import ProductItem from "../../components/ProductItem";
-import { Client, GET_CATEGORY_ALL } from "../../services";
 import { withParams } from "../../utils";
+import { Client, GET_CATEGORY, GET_CATEGORY_ALL } from "./../../services/index";
 import { Container, Products, Title } from "./styles.js";
 
 class Category extends React.Component {
@@ -13,31 +13,39 @@ class Category extends React.Component {
   }
 
   async componentDidMount() {
-    await Client.query({
-      query: GET_CATEGORY_ALL,
-    }).then((response) => {
-      this.setState({
-        products: response.data.category.products,
+    if (this.props.params.category === "all") {
+      await Client.query({
+        query: GET_CATEGORY_ALL,
+      }).then((res) => {
+        this.setState({
+          products: res.data.category.products,
+        });
       });
-    });
+    } else {
+      await Client.query({
+        query: GET_CATEGORY(this.props.params.category),
+      }).then((res) => {
+        this.setState({
+          products: res.data.category.products,
+        });
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.params.category !== this.props.params.category) {
+      this.componentDidMount();
+    }
   }
 
   render() {
-    const { category } = this.props.params;
-
     return (
       <Container>
-        <Title>{category}</Title>
+        <Title>{this.props.params.category}</Title>
         <Products>
-          {this.state.products.map((product) =>
-            product.category === category ? (
-              <ProductItem key={product.id} product={product} />
-            ) : (
-              category === "all" && (
-                <ProductItem key={product.id} product={product} />
-              )
-            )
-          )}
+          {this.state.products.map((product) => {
+            return <ProductItem key={product.id} product={product} />;
+          })}
         </Products>
       </Container>
     );

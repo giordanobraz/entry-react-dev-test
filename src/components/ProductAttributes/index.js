@@ -1,3 +1,4 @@
+import parse from "html-react-parser";
 import React from "react";
 import { connect } from "react-redux";
 import check from "../../assets/check-icn.svg";
@@ -39,14 +40,11 @@ class ProductAttributes extends React.Component {
     this.setState({ showMore: !this.state.showMore });
   };
 
-  handleAddToCart = (product_raw) => {
+  handleAddToCart = (product) => {
     const { onSendToCart } = this.props;
     const { selectedAttributes } = this.state;
-    const product = {
-      ...product_raw,
-      id: product_raw.id + `-${new Date().getTime()}`,
-    };
     const item = { product, selectedAttributes, quantity: 1 };
+
     const productAttrSize = Object.keys(product.attributes).length;
     const selectedAttrSize = Object.keys(selectedAttributes).length;
 
@@ -54,17 +52,21 @@ class ProductAttributes extends React.Component {
       alert("Please select all attributes");
     } else {
       onSendToCart(item);
-      this.props.navigate('/all')
+      this.props.navigate("/all");
     }
   };
 
   onChangeValue = (event) => {
     const { name, value } = event.target;
+
     this.setState({
-      selectedAttributes: {
+      selectedAttributes: [
         ...this.state.selectedAttributes,
-        [name]: value,
-      },
+        {
+          id: name,
+          value,
+        },
+      ],
     });
   };
 
@@ -89,18 +91,18 @@ class ProductAttributes extends React.Component {
                       <div key={`${item.id}`}>
                         <Input
                           type="radio"
-                          id={`${item.id}-${attr.name}`}
-                          name={attr.name}
+                          id={`${attr.name}-${item.id}`}
+                          name={attr.id}
                           value={item.value}
                         />
                         {attr.type === "swatch" ? (
-                          <Label htmlFor={`${item.id}-${attr.name}`}>
+                          <Label htmlFor={`${attr.name}-${item.id}`}>
                             <SpanSwatch color={item.value}>
                               <img src={check} alt="Checked Icon" />
                             </SpanSwatch>
                           </Label>
                         ) : (
-                          <Label htmlFor={`${item.id}-${attr.name}`}>
+                          <Label htmlFor={`${attr.name}-${item.id}`}>
                             <Span>{item.displayValue}</Span>
                           </Label>
                         )}
@@ -140,31 +142,28 @@ class ProductAttributes extends React.Component {
           <Button disabled>OUT OF STOCK</Button>
         )}
 
-        {product.description ? (
+        {product.description && (
           <Content>
-            {this.state.showMore ? (
-              <Description
-                dangerouslySetInnerHTML={{
-                  __html: product.description,
-                }}
-              ></Description>
-            ) : (
-              <Description
-                dangerouslySetInnerHTML={{
-                  __html: product.description.substring(0, 300),
-                }}
-              ></Description>
-            )}
             {product.description.length > 300 ? (
-              <ShowMoreBtn onClick={this.handleShowMore}>
-                {this.state.showMore ? "Show Less" : "Show More"}
-              </ShowMoreBtn>
+              this.state.showMore ? (
+                <Description>
+                  {parse(product.description)}
+                  <ShowMoreBtn onClick={this.handleShowMore}>
+                    Show Less
+                  </ShowMoreBtn>
+                </Description>
+              ) : (
+                <Description>
+                  {parse(product.description.slice(0, 300))}
+                  <ShowMoreBtn onClick={this.handleShowMore}>
+                    Show More
+                  </ShowMoreBtn>
+                </Description>
+              )
             ) : (
-              <span></span>
+              <Description>{parse(product.description)}</Description>
             )}
           </Content>
-        ) : (
-          <span>Loading</span>
         )}
       </Container>
     );

@@ -6,8 +6,9 @@ import { changeCurrency } from "../../features/currency/currencySlice";
 import { withParams } from "../../utils";
 import {
   Button,
+  Card,
   OutOfStock,
-  ProductCard,
+  Product,
   ProductDetails,
   ProductImage,
   ProductPrice,
@@ -17,44 +18,58 @@ import {
 class ProductItem extends React.Component {
   handleAddToCart = (product) => {
     const { onSendToCart } = this.props;
-    const item = { product, selectedAttributes: [], quantity: 1 };
-    onSendToCart(item);
-    alert("Added to cart");
+    let selectedAttributes = [];
+
+    if (product.attributes.length > 0) {
+      product.attributes.map((attribute) => {
+        selectedAttributes.push({
+          id: attribute.id,
+          value: attribute.items[0].value,
+        });
+      });
+
+      const item = { product, selectedAttributes, quantity: 1 };
+      onSendToCart(item);
+    } else {
+      const item = { product, selectedAttributes, quantity: 1 };
+      onSendToCart(item);
+    }
+  };
+
+  handleOpenProductPage = (productId) => {
+    const { navigate } = this.props;
+    navigate(`/product/${productId}`);
   };
 
   render() {
-    const { product, currency, navigate } = this.props;
+    const { product, currency } = this.props;
 
     return (
-      <ProductCard>
-        <ProductImage imageURL={product.gallery[0]} inStock={product.inStock}>
-          {!product.inStock && <OutOfStock>Out of stock</OutOfStock>}
-        </ProductImage>
+      <Card>
+        <Product onClick={() => this.handleOpenProductPage(product.id)}>
+          <ProductImage imageURL={product.gallery[0]} inStock={product.inStock}>
+            {!product.inStock && <OutOfStock>Out of stock</OutOfStock>}
+          </ProductImage>
 
-        <ProductDetails inStock={product.inStock}>
-          <ProductTitle>
-            {product.brand} {product.name}
-          </ProductTitle>
-          <ProductPrice>
-            {product.prices.map(
-              (price) =>
-                price.currency.label === currency.currency &&
-                `${price.currency.symbol} ${price.amount}`
-            )}
-          </ProductPrice>
-        </ProductDetails>
+          <ProductDetails inStock={product.inStock}>
+            <ProductTitle>
+              {product.brand} {product.name}
+            </ProductTitle>
+            <ProductPrice>
+              {product.prices.map(
+                (price) =>
+                  price.currency.label === currency.currency &&
+                  `${price.currency.symbol} ${price.amount}`
+              )}
+            </ProductPrice>
+          </ProductDetails>
+        </Product>
         {product.inStock && (
-          <Button
-            onClick={
-              product.attributes.length > 0
-                ? () => navigate(`/product/${product.id}`)
-                : () => this.handleAddToCart(product)
-            }
-          >
+          <Button onClick={() => this.handleAddToCart(product)}>
             <img src={shopCart} alt="shop cart" />
           </Button>
         )}
-      </ProductCard>
+      </Card>
     );
   }
 }

@@ -28,9 +28,8 @@ class Header extends React.Component {
   }
 
   async componentDidMount() {
-    document.addEventListener("mousedown", this.handleClickOutside);
-
-    // Get available currencies
+    window.addEventListener("click", this.handleClickOutside);
+    
     await Client.query({
       query: GET_CURRENCIES,
     }).then((response) => {
@@ -50,13 +49,18 @@ class Header extends React.Component {
   };
 
   handleDropdownMenu = () => {
-    this.setState({
-      isCurrencyDropdownOpen: !this.state.isCurrencyDropdownOpen,
-    });
+    this.state.isModalOpen
+      ? this.setState({
+          isModalOpen: false,
+          isCurrencyDropdownOpen: true,
+        })
+      : this.setState({
+          isCurrencyDropdownOpen: !this.state.isCurrencyDropdownOpen,
+        });
   };
 
   componentWillUnmount() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
+    window.removeEventListener("click", this.handleClickOutside);
   }
 
   handleClickOutside = (event) => {
@@ -71,16 +75,25 @@ class Header extends React.Component {
   };
 
   handleOpenModal = () => {
-    this.setState({ isModalOpen: true });
+    this.state.isCurrencyDropdownOpen
+      ? this.setState({
+          isCurrencyDropdownOpen: false,
+          isModalOpen: true,
+        })
+      : this.setState({
+          isModalOpen: true,
+        });
   };
 
   handleCloseModal = () => {
-    this.setState({ isModalOpen: !this.state.isModalOpen });
+    this.setState({
+      isModalOpen: false,
+    });
   };
 
   render() {
     return (
-      <Nav>
+      <Nav id="nav">
         <NavMenu>
           <NavLink to="/all">ALL</NavLink>
           <NavLink to="/clothes">CLOTHES</NavLink>
@@ -111,9 +124,9 @@ class Header extends React.Component {
             {this.props.cart.length > 0 && (
               <CartBadge>{this.props.cart.length}</CartBadge>
             )}
-            {this.state.isModalOpen ? (
+            {this.state.isModalOpen && (
               <Modal handleCloseModal={this.handleCloseModal} />
-            ) : null}
+            )}
           </Button>
         </NavButtons>
       </Nav>
