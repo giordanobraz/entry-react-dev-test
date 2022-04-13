@@ -1,55 +1,74 @@
 import React from "react";
-import ProductItem from "../../components/ProductItem";
+import { Query } from "react-apollo";
+import { connect } from "react-redux";
+import ProductListItem from "../../components/ProductListItem";
+import { addToCart } from "../../features/cart/cartSlice";
+import { GET_CATEGORY } from "../../services";
 import { withParams } from "../../utils";
-import { Client, GET_CATEGORY, GET_CATEGORY_ALL } from "./../../services/index";
-import { Container, Products, Title } from "./styles.js";
+import { Container, ProductList, Title } from "./styles.js";
 
 class Category extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      products: [],
-    };
-  }
+  handleAddToCart = (product) => {
+    const { onSendToCart } = this.props;
+    let selectedAttributes = [];
 
-  async componentDidMount() {
-    if (this.props.params.category === "all") {
-      await Client.query({
-        query: GET_CATEGORY_ALL,
-      }).then((res) => {
-        this.setState({
-          products: res.data.category.products,
-        });
-      });
+    if (product.attributes.length > 0) {
+      product.attributes.map((attribute) =>
+        selectedAttributes.push({
+          id: attribute.id,
+          value: attribute.items[0].value,
+        })
+      );
+
+      const item = { product, selectedAttributes, quantity: 1 };
+      onSendToCart(item);
     } else {
-      await Client.query({
-        query: GET_CATEGORY(this.props.params.category),
-      }).then((res) => {
-        this.setState({
-          products: res.data.category.products,
-        });
-      });
+      const item = { product, selectedAttributes, quantity: 1 };
+      onSendToCart(item);
     }
-  }
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.params.category !== this.props.params.category) {
-      this.componentDidMount();
-    }
-  }
+  };
 
   render() {
+    const { currency, params } = this.props;
+
     return (
       <Container>
-        <Title>{this.props.params.category}</Title>
-        <Products>
-          {this.state.products.map((product) => {
-            return <ProductItem key={product.id} product={product} />;
-          })}
-        </Products>
+        <Title>{params.category}</Title>
+        <ProductList>
+          <Query query={GET_CATEGORY(params.category)}>
+            {({ loading, error, data }) => {
+              if (loading) return <p>Loading...</p>;
+              if (error) return <p>{`Error: ${error}`}</p>;
+
+              return data.category.products.map((product) => (
+                <ProductListItem
+                  key={product.id}
+                  currency={currency}
+                  product={product}
+                  handleAddToCart={this.handleAddToCart}
+                />
+              ));
+            }}
+          </Query>
+        </ProductList>
       </Container>
     );
   }
 }
 
-export default withParams(Category);
+function mapDispatchToProps(dispatch) {
+  return {
+    onSendToCart: (product) => dispatch(addToCart(product)),
+  };
+}
+
+function mapStateToProps(state) {
+  return {
+    currency: state.currency,
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withParams(Category));

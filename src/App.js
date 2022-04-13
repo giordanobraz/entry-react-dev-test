@@ -12,7 +12,7 @@ function App() {
       <Header />
       <Routes>
         <Route path=":category" index element={<Category />} />
-        <Route exact path="product/:productId" element={<ProductPage />} />
+        <Route path="/product/:productId" element={<ProductPage />} />
         <Route path="cart" element={<Cart />} />
         <Route path="/" element={<Navigate to="/all" />} />
       </Routes>

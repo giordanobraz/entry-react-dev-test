@@ -3,6 +3,11 @@ import { ApolloClient, gql, InMemoryCache } from "@apollo/client";
 export const Client = new ApolloClient({
   uri: "http://localhost:4000/",
   cache: new InMemoryCache(),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: "no-cache",
+    },
+  },
 });
 
 export const GET_CURRENCIES = gql`
@@ -32,7 +37,7 @@ query {
         id
         value
         displayValue
-      }
+      }      
     }
     prices {
       amount
@@ -54,18 +59,17 @@ export const GET_CATEGORY = (categoryName) => gql`
         brand
         name
         inStock
-        gallery
-        description
+        gallery        
         category
         attributes {
           id
           name
-          type
+          type 
           items {
             id
             value
             displayValue
-          }
+          }          
         }
         prices {
           currency {
@@ -89,17 +93,11 @@ export const GET_CATEGORY_ALL = gql`
         brand
         inStock
         gallery
-        description
         category
         attributes {
           id
           name
           type
-          items {
-            id
-            value
-            displayValue
-          }
         }
         prices {
           amount

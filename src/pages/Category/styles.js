@@ -10,7 +10,7 @@ export const Container = styled.div`
   margin: 0 auto;
 `;
 
-export const Products = styled.div`
+export const ProductList = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

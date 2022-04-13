@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Button = styled.button`
@@ -14,11 +15,13 @@ export const Button = styled.button`
   }
 `;
 
-export const Product = styled.div`
+export const Product = styled(Link)`
   display: flex;
   flex-direction: column;
   gap: 24px;
   padding: 16px;
+  text-decoration: none;
+  color: var(--c-black);
 `;
 
 export const Card = styled.div`

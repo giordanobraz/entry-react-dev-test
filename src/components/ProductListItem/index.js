@@ -15,38 +15,13 @@ import {
   ProductTitle
 } from "./styles";
 
-class ProductItem extends React.Component {
-  handleAddToCart = (product) => {
-    const { onSendToCart } = this.props;
-    let selectedAttributes = [];
-
-    if (product.attributes.length > 0) {
-      product.attributes.map((attribute) => {
-        selectedAttributes.push({
-          id: attribute.id,
-          value: attribute.items[0].value,
-        });
-      });
-
-      const item = { product, selectedAttributes, quantity: 1 };
-      onSendToCart(item);
-    } else {
-      const item = { product, selectedAttributes, quantity: 1 };
-      onSendToCart(item);
-    }
-  };
-
-  handleOpenProductPage = (productId) => {
-    const { navigate } = this.props;
-    navigate(`/product/${productId}`);
-  };
-
+class ProductListItem extends React.Component {
   render() {
-    const { product, currency } = this.props;
+    const { currency, product, handleAddToCart } = this.props;
 
     return (
       <Card>
-        <Product onClick={() => this.handleOpenProductPage(product.id)}>
+        <Product to={`/product/${product.id}`} state={{ product }}>
           <ProductImage imageURL={product.gallery[0]} inStock={product.inStock}>
             {!product.inStock && <OutOfStock>Out of stock</OutOfStock>}
           </ProductImage>
@@ -65,7 +40,7 @@ class ProductItem extends React.Component {
           </ProductDetails>
         </Product>
         {product.inStock && (
-          <Button onClick={() => this.handleAddToCart(product)}>
+          <Button onClick={() => handleAddToCart(product)}>
             <img src={shopCart} alt="shop cart" />
           </Button>
         )}
@@ -90,4 +65,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withParams(ProductItem));
+)(withParams(ProductListItem));

@@ -28,11 +28,9 @@ import {
 class ProductAttributes extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       showMore: false,
       selectedAttributes: [],
-      product: {},
     };
   }
 
@@ -81,12 +79,12 @@ class ProductAttributes extends React.Component {
         </Header>
 
         <Attributes>
-          {product.attributes ? (
+          {product.attributes &&
             product.attributes.map((attr) => (
               <Attribute key={attr.id}>
                 <AttributeName>{attr.name}:</AttributeName>
                 <Items onChange={this.onChangeValue}>
-                  {attr.items ? (
+                  {attr.items &&
                     attr.items.map((item) => (
                       <div key={`${item.id}`}>
                         <Input
@@ -107,16 +105,10 @@ class ProductAttributes extends React.Component {
                           </Label>
                         )}
                       </div>
-                    ))
-                  ) : (
-                    <span>Loading...</span>
-                  )}
+                    ))}
                 </Items>
               </Attribute>
-            ))
-          ) : (
-            <span>Loading...</span>
-          )}
+            ))}
         </Attributes>
 
         <PriceData>
